@@ -11,14 +11,14 @@
 <style>
   :root {
     --bg:#0b1118; --bar:#141c26; --card:#1a2430; --fg:#e8eef4; --muted:#8fa0b2;
-    --line:#26323f; --accent:#35b8b0; --accent2:#f0b429; --on-accent:#04201e; --field:#1f2a36;
+    --line:#26323f; --edge:#0e3b3f; --accent:#35b8b0; --accent2:#f0b429; --on-accent:#04201e; --field:#1f2a36;
   }
   [hidden]{display:none!important}
   *{box-sizing:border-box}
   html,body{height:100%;margin:0}
   body{display:flex;flex-direction:column;background:var(--bg);color:var(--fg);
     font-family:system-ui,"Noto Sans Bengali",sans-serif;overflow:hidden}
-  body.neon{--accent:#ff3ec9;--accent2:#7cf4ff;--on-accent:#1b0016;--bg:#0a0612;--bar:#150b24;--card:#1d1030;--field:#24143b;--line:#3a2160}
+  body.neon{--accent:#ff3ec9;--accent2:#7cf4ff;--on-accent:#1b0016;--bg:#0a0612;--bar:#150b24;--card:#1d1030;--field:#24143b;--line:#3a2160;--edge:#4a1a7a}
   button{font:inherit;color:var(--fg);background:transparent;border:0;cursor:pointer}
   button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
   input,textarea{font:inherit;color:var(--fg);background:var(--field);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0}
@@ -41,18 +41,32 @@
   .cube .c{transform:rotateY(90deg) translateZ(45px)} .cube .d{transform:rotateY(-90deg) translateZ(45px)}
   .cube .e{transform:rotateX(90deg) translateZ(45px)} .cube .f{transform:rotateX(-90deg) translateZ(45px)}
   @keyframes spin{from{transform:rotateX(-22deg) rotateY(0)}to{transform:rotateX(-22deg) rotateY(360deg)}}
-  .kite{display:block;width:84px;height:auto;margin:6px auto 14px;transform-origin:50% 8%;animation:sway 5s ease-in-out infinite}
+  .k1{fill:var(--accent2)}.k2{fill:var(--accent)}.k3{fill:var(--accent);opacity:.75}.k4{fill:var(--accent2);opacity:.8}
+  .ks{fill:none;stroke:var(--bg);stroke-width:2.2;stroke-linejoin:round}.kt{fill:none;stroke:var(--accent2);stroke-width:2.4;stroke-linecap:round}
+  .kite{display:block;width:72px;height:auto;margin:6px auto 14px;transform-origin:50% 8%;animation:sway 5s ease-in-out infinite}
   @keyframes sway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
   .acard .kite{width:64px;margin:0 auto 6px}
   h1{font-size:24px;margin:0 0 4px;text-align:center}
   .sub{color:var(--muted);text-align:center;margin:0 0 20px}
   h2{font-size:12px;letter-spacing:.07em;color:var(--muted);margin:22px 0 10px;font-weight:600}
-  .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;perspective:800px}
-  .tile{display:flex;flex-direction:column;gap:3px;padding:14px;background:var(--card);border:1px solid var(--line);
-    border-radius:12px;text-align:left;min-width:0;transform-style:preserve-3d;transition:transform .15s,box-shadow .15s;
-    box-shadow:0 6px 14px rgba(0,0,0,.35)}
-  .tile b,.tile small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transform:translateZ(14px)}
-  .tile small{color:var(--muted)}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;perspective:900px;padding:0 6px 6px 0}
+  .tile{display:flex;align-items:center;gap:12px;padding:12px;min-width:0;text-align:left;border-radius:16px;
+    background:linear-gradient(155deg,var(--card),var(--field));border:1px solid var(--line);transform-style:preserve-3d;
+    transform:rotateX(5deg) rotateY(-5deg);transition:transform .18s,box-shadow .18s;
+    box-shadow:1px 1px 0 var(--edge),2px 2px 0 var(--edge),3px 3px 0 var(--edge),4px 4px 0 var(--edge),5px 5px 0 var(--edge),6px 6px 0 var(--edge),10px 16px 24px rgba(0,0,0,.55)}
+  .tile:active{transform:translate(5px,5px);box-shadow:1px 1px 0 var(--edge),2px 2px 8px rgba(0,0,0,.5)}
+  .tile.big{grid-column:1/-1;padding:16px}
+  .ico{flex:0 0 auto;width:44px;height:44px;border-radius:13px;display:grid;place-items:center;font-weight:800;font-size:20px;color:#fff;
+    background:var(--accent);transform:translateZ(26px);box-shadow:0 5px 0 rgba(0,0,0,.35),0 10px 14px rgba(0,0,0,.45);text-shadow:0 1px 2px rgba(0,0,0,.4)}
+  .big .ico{width:54px;height:54px;font-size:26px}
+  .tt{display:flex;flex-direction:column;min-width:0;gap:2px;transform:translateZ(12px)}
+  .tt b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
+  .big .tt b{font-size:17px}
+  .tt small{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .hint{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--bar);border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+  .hint .btn{padding:6px 10px;font-size:12px;white-space:nowrap}
+  #toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--card);border:1px solid var(--accent);
+    color:var(--fg);padding:10px 14px;border-radius:12px;font-size:13px;z-index:60;max-width:90vw;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,.5)}
   .dock{display:flex;justify-content:space-around;gap:2px;padding:6px 6px;background:var(--bar);border-top:1px solid var(--line);
     padding-bottom:max(6px,env(safe-area-inset-bottom));perspective:600px}
   .dk{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 2px;border-radius:10px;font-size:11px;color:var(--muted);
@@ -123,12 +137,12 @@
 <div id="auth" hidden>
   <form class="acard" id="aform" autocomplete="on">
     <svg class="kite" viewBox="0 0 100 130" role="img" aria-label="ঘুড়ি">
-  <polygon points="50,6 84,48 50,48" fill="var(--accent2)"/>
-  <polygon points="50,6 16,48 50,48" fill="var(--accent)"/>
-  <polygon points="84,48 50,92 50,48" fill="var(--accent)" opacity=".75"/>
-  <polygon points="16,48 50,92 50,48" fill="var(--accent2)" opacity=".8"/>
-  <path d="M50 6 L84 48 L50 92 L16 48 Z M16 48 H84 M50 6 V92" fill="none" stroke="var(--bg)" stroke-width="2.2" stroke-linejoin="round"/>
-  <path d="M50 92 C42 100 58 106 50 114 C44 120 56 124 52 129" fill="none" stroke="var(--accent2)" stroke-width="2.4" stroke-linecap="round"/>
+  <polygon class="k1" points="50,6 84,48 50,48"/>
+  <polygon class="k2" points="50,6 16,48 50,48"/>
+  <polygon class="k3" points="84,48 50,92 50,48"/>
+  <polygon class="k4" points="16,48 50,92 50,48"/>
+  <path class="ks" d="M50 6 L84 48 L50 92 L16 48 Z M16 48 H84 M50 6 V92"/>
+  <path class="kt" d="M50 92 C42 100 58 106 50 114 C44 120 56 124 52 129"/>
 </svg>
     <h1 id="atitle">সাইন আপ</h1>
     <p class="muted" id="asub" style="margin:0">অ্যাকাউন্ট খুলে ব্রাউজার চালু করুন।</p>
@@ -155,21 +169,25 @@
   <div id="start">
     <div class="wrap">
       <svg class="kite" viewBox="0 0 100 130" role="img" aria-label="ঘুড়ি">
-  <polygon points="50,6 84,48 50,48" fill="var(--accent2)"/>
-  <polygon points="50,6 16,48 50,48" fill="var(--accent)"/>
-  <polygon points="84,48 50,92 50,48" fill="var(--accent)" opacity=".75"/>
-  <polygon points="16,48 50,92 50,48" fill="var(--accent2)" opacity=".8"/>
-  <path d="M50 6 L84 48 L50 92 L16 48 Z M16 48 H84 M50 6 V92" fill="none" stroke="var(--bg)" stroke-width="2.2" stroke-linejoin="round"/>
-  <path d="M50 92 C42 100 58 106 50 114 C44 120 56 124 52 129" fill="none" stroke="var(--accent2)" stroke-width="2.4" stroke-linecap="round"/>
+  <polygon class="k1" points="50,6 84,48 50,48"/>
+  <polygon class="k2" points="50,6 16,48 50,48"/>
+  <polygon class="k3" points="84,48 50,92 50,48"/>
+  <polygon class="k4" points="16,48 50,92 50,48"/>
+  <path class="ks" d="M50 6 L84 48 L50 92 L16 48 Z M16 48 H84 M50 6 V92"/>
+  <path class="kt" d="M50 92 C42 100 58 106 50 114 C44 120 56 124 52 129"/>
 </svg>
       <p class="sub" style="margin:0 0 4px;letter-spacing:.08em">ঘুড়ি ব্রাউজার</p><h1 id="hello">স্বাগতম</h1>
       <p class="sub">ঠিকানা লিখুন, অথবা নিচের এআই বাটনে প্রশ্ন করুন।</p>
-      <h2>দ্রুত লিংক</h2><div class="tiles" id="quick"></div>
+      <h2>আমার ব্লগ</h2><div class="tiles" id="hero"></div>
+      <h2>সোশ্যাল মিডিয়া ও সার্চ</h2><div class="tiles" id="quick"></div>
       <h2>বুকমার্ক</h2><div class="tiles" id="marks"></div>
-      <p class="muted" style="margin-top:22px">কিছু সাইট (Google, Facebook, YouTube) এই পেজের ভেতরে খুলতে দেয় না। ফাঁকা দেখালে "নতুন ট্যাবে খুলুন" চাপুন।</p>
+      <p class="muted" style="margin-top:22px">গুগল, ইউটিউব, ফেসবুক, টিকটক ও এরকম সাইট ব্রাউজারের ভেতরে খুলতে দেয় না, তাই এগুলো নতুন ট্যাবে (Chrome-এ) খুলবে। ঠিকানার ঘরে কিছু লিখলে গুগলে সার্চ হবে।</p>
     </div>
   </div>
 </div>
+
+<div class="hint" id="hint" hidden><span>পেজ ফাঁকা দেখালে সাইটটি ভেতরে খুলতে দেয় না।</span><button class="btn" id="hintOpen" type="button">বাইরে খুলুন</button></div>
+<div id="toast" hidden></div>
 
 <div class="dock">
   <button class="dk" id="dHome"><span>⌂</span>হোম</button>
@@ -206,19 +224,25 @@
   function lsGet(k, d) { try { var v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } }
   function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 
+  var BLOG = { n: 'FTTH BD \u09ac\u09cd\u09b2\u0997', u: 'https://ftthbd.blogspot.com/', i: 'B', c: '#f57d00' };
   var QUICK = [
-    ['উইকিপিডিয়া (বাংলা)', 'https://bn.wikipedia.org/'], ['Wikipedia', 'https://en.wikipedia.org/'],
-    ['প্রথম আলো', 'https://www.prothomalo.com/'], ['OpenStreetMap', 'https://www.openstreetmap.org/'],
-    ['Archive.org', 'https://archive.org/'], ['Hacker News', 'https://news.ycombinator.com/']
+    { n: 'Google', u: 'https://www.google.com/', i: 'G', c: '#4285f4' },
+    { n: 'YouTube', u: 'https://m.youtube.com/', i: '\u25b6', c: '#ff0000' },
+    { n: 'Facebook', u: 'https://m.facebook.com/', i: 'f', c: '#1877f2' },
+    { n: 'TikTok', u: 'https://www.tiktok.com/', i: '\u266a', c: '#111111' },
+    { n: 'Instagram', u: 'https://www.instagram.com/', i: 'IG', c: 'linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7)' },
+    { n: 'WhatsApp', u: 'https://web.whatsapp.com/', i: 'W', c: '#25d366' },
+    { n: 'X', u: 'https://x.com/', i: 'X', c: '#000000' }
   ];
+  var BLOCK = ['google.com', 'youtube.com', 'facebook.com', 'fb.com', 'tiktok.com', 'instagram.com', 'x.com', 'twitter.com', 'whatsapp.com', 'linkedin.com', 'messenger.com'];
   var EXT = [
-    { id: 'notes', icon: '✎', name: 'নোটপ্যাড', desc: 'দরকারি কথা লিখে রাখুন, নিজে নিজে সেভ হয়।' },
-    { id: 'calc', icon: '＋', name: 'ক্যালকুলেটর', desc: 'হিসাব করার ছোট ক্যালকুলেটর।' },
-    { id: 'timer', icon: '⏱', name: 'স্টপওয়াচ', desc: 'সময় মাপার স্টপওয়াচ।' },
-    { id: 'neon', icon: '◐', name: 'নিয়ন থিম', desc: 'ব্রাউজারের রং নিয়ন গোলাপি-নীল করে দেয়।' }
+    { id: 'notes', icon: '\u270e', name: '\u09a8\u09cb\u099f\u09aa\u09cd\u09af\u09be\u09a1', desc: '\u09a6\u09b0\u0995\u09be\u09b0\u09bf \u0995\u09a5\u09be \u09b2\u09bf\u0996\u09c7 \u09b0\u09be\u0996\u09c1\u09a8, \u09a8\u09bf\u099c\u09c7 \u09a8\u09bf\u099c\u09c7 \u09b8\u09c7\u09ad \u09b9\u09af\u09bc\u0964' },
+    { id: 'calc', icon: '\uff0b', name: '\u0995\u09cd\u09af\u09be\u09b2\u0995\u09c1\u09b2\u09c7\u099f\u09b0', desc: '\u09b9\u09bf\u09b8\u09be\u09ac \u0995\u09b0\u09be\u09b0 \u099b\u09cb\u099f \u0995\u09cd\u09af\u09be\u09b2\u0995\u09c1\u09b2\u09c7\u099f\u09b0\u0964' },
+    { id: 'timer', icon: '\u23f1', name: '\u09b8\u09cd\u099f\u09aa\u0993\u09af\u09bc\u09be\u099a', desc: '\u09b8\u09ae\u09af\u09bc \u09ae\u09be\u09aa\u09be\u09b0 \u09b8\u09cd\u099f\u09aa\u0993\u09af\u09bc\u09be\u099a\u0964' },
+    { id: 'neon', icon: '\u25d0', name: '\u09a8\u09bf\u09af\u09bc\u09a8 \u09a5\u09bf\u09ae', desc: '\u09ac\u09cd\u09b0\u09be\u0989\u099c\u09be\u09b0\u09c7\u09b0 \u09b0\u0982 \u09a8\u09bf\u09af\u09bc\u09a8 \u0997\u09cb\u09b2\u09be\u09aa\u09bf-\u09a8\u09c0\u09b2 \u0995\u09b0\u09c7 \u09a6\u09c7\u09af\u09bc\u0964' }
   ];
 
-  /* ---------- অ্যাকাউন্ট ---------- */
+  /* ---------- \u0985\u09cd\u09af\u09be\u0995\u09be\u0989\u09a8\u09cd\u099f ---------- */
   var users = lsGet('mb_users', {}), me = null, signup = true;
   function persist() { if (me) { users[me.email] = me; lsSet('mb_users', users); } }
   function sha(s) {
@@ -233,11 +257,11 @@
   }
   function setMode(isSignup) {
     signup = isSignup;
-    $('atitle').textContent = isSignup ? 'সাইন আপ' : 'লগইন';
-    $('asub').textContent = isSignup ? 'অ্যাকাউন্ট খুলে ব্রাউজার চালু করুন।' : 'আপনার ইমেইল ও পাসওয়ার্ড দিন।';
+    $('atitle').textContent = isSignup ? '\u09b8\u09be\u0987\u09a8 \u0986\u09aa' : '\u09b2\u0997\u0987\u09a8';
+    $('asub').textContent = isSignup ? '\u0985\u09cd\u09af\u09be\u0995\u09be\u0989\u09a8\u09cd\u099f \u0996\u09c1\u09b2\u09c7 \u09ac\u09cd\u09b0\u09be\u0989\u099c\u09be\u09b0 \u099a\u09be\u09b2\u09c1 \u0995\u09b0\u09c1\u09a8\u0964' : '\u0986\u09aa\u09a8\u09be\u09b0 \u0987\u09ae\u09c7\u0987\u09b2 \u0993 \u09aa\u09be\u09b8\u0993\u09af\u09bc\u09be\u09b0\u09cd\u09a1 \u09a6\u09bf\u09a8\u0964';
     $('aname').hidden = !isSignup;
-    $('abtn').textContent = isSignup ? 'সাইন আপ করুন' : 'লগইন করুন';
-    $('aswitch').textContent = isSignup ? 'আগে থেকেই অ্যাকাউন্ট আছে? লগইন' : 'নতুন অ্যাকাউন্ট খুলুন';
+    $('abtn').textContent = isSignup ? '\u09b8\u09be\u0987\u09a8 \u0986\u09aa \u0995\u09b0\u09c1\u09a8' : '\u09b2\u0997\u0987\u09a8 \u0995\u09b0\u09c1\u09a8';
+    $('aswitch').textContent = isSignup ? '\u0986\u0997\u09c7 \u09a5\u09c7\u0995\u09c7\u0987 \u0985\u09cd\u09af\u09be\u0995\u09be\u0989\u09a8\u09cd\u099f \u0986\u099b\u09c7? \u09b2\u0997\u0987\u09a8' : '\u09a8\u09a4\u09c1\u09a8 \u0985\u09cd\u09af\u09be\u0995\u09be\u0989\u09a8\u09cd\u099f \u0996\u09c1\u09b2\u09c1\u09a8';
     $('aerr').textContent = '';
   }
   $('aswitch').onclick = function () { setMode(!signup); };
@@ -245,14 +269,14 @@
     e.preventDefault();
     var email = $('aemail').value.trim().toLowerCase(), pass = $('apass').value, name = $('aname').value.trim();
     var err = $('aerr'); err.textContent = '';
-    if (pass.length < 6) { err.textContent = 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।'; return; }
+    if (pass.length < 6) { err.textContent = '\u09aa\u09be\u09b8\u0993\u09af\u09bc\u09be\u09b0\u09cd\u09a1 \u0995\u09ae\u09aa\u0995\u09cd\u09b7\u09c7 \u09ec \u0985\u0995\u09cd\u09b7\u09b0\u09c7\u09b0 \u09b9\u09a4\u09c7 \u09b9\u09ac\u09c7\u0964'; return; }
     sha(pass).then(function (h) {
       if (signup) {
-        if (!name) { err.textContent = 'নাম লিখুন।'; return; }
-        if (users[email]) { err.textContent = 'এই ইমেইল দিয়ে আগেই অ্যাকাউন্ট খোলা হয়েছে। লগইন করুন।'; return; }
+        if (!name) { err.textContent = '\u09a8\u09be\u09ae \u09b2\u09bf\u0996\u09c1\u09a8\u0964'; return; }
+        if (users[email]) { err.textContent = '\u098f\u0987 \u0987\u09ae\u09c7\u0987\u09b2 \u09a6\u09bf\u09af\u09bc\u09c7 \u0986\u0997\u09c7\u0987 \u0985\u09cd\u09af\u09be\u0995\u09be\u0989\u09a8\u09cd\u099f \u0996\u09cb\u09b2\u09be \u09b9\u09af\u09bc\u09c7\u099b\u09c7\u0964 \u09b2\u0997\u0987\u09a8 \u0995\u09b0\u09c1\u09a8\u0964'; return; }
         users[email] = { email: email, name: name, hash: h, ext: [], marks: [], notes: '' };
       } else {
-        if (!users[email] || users[email].hash !== h) { err.textContent = 'ইমেইল বা পাসওয়ার্ড মিলছে না।'; return; }
+        if (!users[email] || users[email].hash !== h) { err.textContent = '\u0987\u09ae\u09c7\u0987\u09b2 \u09ac\u09be \u09aa\u09be\u09b8\u0993\u09af\u09bc\u09be\u09b0\u09cd\u09a1 \u09ae\u09bf\u09b2\u099b\u09c7 \u09a8\u09be\u0964'; return; }
       }
       lsSet('mb_users', users); lsSet('mb_session', email); enter(users[email]);
     });
@@ -260,7 +284,7 @@
   function enter(u) {
     me = u; $('auth').hidden = true; $('apass').value = '';
     document.body.classList.toggle('neon', me.ext.indexOf('neon') >= 0);
-    $('hello').textContent = 'স্বাগতম, ' + me.name;
+    $('hello').textContent = '\u09b8\u09cd\u09ac\u09be\u0997\u09a4\u09ae, ' + me.name.split('@')[0];
     if (!tabs.length) newTab('');
     renderStart(); setActive(active);
   }
@@ -269,18 +293,18 @@
     closeDrawer(); $('auth').hidden = false; setMode(false);
   }
 
-  /* ---------- ট্যাব ও নেভিগেশন ---------- */
+  /* ---------- \u099f\u09cd\u09af\u09be\u09ac \u0993 \u09a8\u09c7\u09ad\u09bf\u0997\u09c7\u09b6\u09a8 ---------- */
   var tabs = [], active = 0;
   function host(u) { return (u || '').replace(/^https?:\/\/(www\.)?/, '').split('/')[0]; }
   function normalize(q) {
     q = q.trim(); if (!q) return '';
     if (/^https?:\/\//i.test(q)) return q;
     if (!/\s/.test(q) && /\.[a-z]{2,}(\/|$|:)/i.test(q)) return 'https://' + q;
-    return 'https://bn.wikipedia.org/w/index.php?search=' + encodeURIComponent(q);
+    return 'https://www.google.com/search?q=' + encodeURIComponent(q);
   }
   function newTab(u) {
     var f = document.createElement('iframe');
-    f.title = 'ওয়েব পেজ'; f.hidden = true; f.referrerPolicy = 'no-referrer';
+    f.title = '\u0993\u09af\u09bc\u09c7\u09ac \u09aa\u09c7\u099c'; f.hidden = true; f.referrerPolicy = 'no-referrer';
     f.setAttribute('sandbox', 'allow-scripts allow-forms allow-same-origin allow-popups allow-popups-to-escape-sandbox');
     $('stage').appendChild(f);
     tabs.push({ u: '', hist: [], pos: -1, frame: f });
@@ -294,13 +318,19 @@
     $('url').value = t.u;
     $('back').disabled = t.pos < 0; $('fwd').disabled = t.pos >= t.hist.length - 1;
     $('tcount').textContent = tabs.length;
-    $('dExt').disabled = !t.u;
+    $('dExt').disabled = !t.u; $('hint').hidden = !t.u;
+    if (!t.u) $('start').scrollTop = 0;
     var on = me && t.u && me.marks.some(function (m) { return m[1] === t.u; });
-    $('star').textContent = on ? '★' : '☆'; $('star').classList.toggle('on', !!on);
+    $('star').textContent = on ? '\u2605' : '\u2606'; $('star').classList.toggle('on', !!on);
     if (!t.u && me) renderMarks();
   }
+  function blocked(u) { var h = host(u).toLowerCase(); return BLOCK.some(function (b) { return h === b || h.slice(-(b.length + 1)) === '.' + b; }); }
+  var toastT = null;
+  function toast(m) { var t = $('toast'); t.textContent = m; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(function () { t.hidden = true; }, 3200); }
   function go(q) {
-    var u = normalize(q); if (!u) return; var t = tabs[active];
+    var u = normalize(q); if (!u) return;
+    if (blocked(u)) { toast('\u098f\u0987 \u09b8\u09be\u0987\u099f \u09ad\u09c7\u09a4\u09b0\u09c7 \u0996\u09c1\u09b2\u09a4\u09c7 \u09a6\u09c7\u09af\u09bc \u09a8\u09be, \u09a8\u09a4\u09c1\u09a8 \u099f\u09cd\u09af\u09be\u09ac\u09c7 \u0996\u09c1\u09b2\u099b\u09bf...'); window.open(u, '_blank', 'noopener'); return; }
+    var t = tabs[active];
     t.hist = t.hist.slice(0, t.pos + 1); t.hist.push(u); t.pos = t.hist.length - 1; t.u = u; t.frame.src = u; setActive(active);
   }
   function step(d) {
@@ -319,6 +349,7 @@
   $('reload').onclick = function () { var t = tabs[active]; if (t.u) { t.frame.src = 'about:blank'; setTimeout(function () { t.frame.src = t.u; }, 30); } };
   $('dHome').onclick = function () { var t = tabs[active]; t.pos = -1; t.u = ''; setActive(active); };
   $('dNew').onclick = function () { newTab(''); };
+  $('hintOpen').onclick = function () { var t = tabs[active]; if (t.u) window.open(t.u, '_blank', 'noopener'); };
   $('dExt').onclick = function () { var t = tabs[active]; if (t.u) window.open(t.u, '_blank', 'noopener'); };
   $('star').onclick = function () {
     var t = tabs[active]; if (!t.u || !me) return; var idx = -1;
@@ -327,25 +358,32 @@
     persist(); setActive(active);
   };
 
-  /* ---------- শুরুর পেজ ---------- */
-  function tile(name, u) {
-    var b = el('button', 'tile'); b.appendChild(el('b', '', name)); b.appendChild(el('small', '', host(u)));
+  /* ---------- \u09b6\u09c1\u09b0\u09c1\u09b0 \u09aa\u09c7\u099c ---------- */
+  function tile(name, u, icon, color, big) {
+    var b = el('button', 'tile' + (big ? ' big' : '')), ic = el('span', 'ico', icon || name.charAt(0).toUpperCase());
+    if (color) ic.style.background = color;
+    var t = el('span', 'tt'); t.appendChild(el('b', '', name)); t.appendChild(el('small', '', host(u)));
+    b.appendChild(ic); b.appendChild(t);
     b.onclick = function () { go(u); };
     b.addEventListener('pointermove', function (e) {
       var r = b.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
-      b.style.transform = 'rotateY(' + (x * 22) + 'deg) rotateX(' + (-y * 22) + 'deg) translateZ(8px)';
+      b.style.transform = 'rotateY(' + (x * 24) + 'deg) rotateX(' + (-y * 24) + 'deg) translateZ(10px)';
     });
     b.addEventListener('pointerleave', function () { b.style.transform = ''; });
     return b;
   }
-  function renderStart() { var q = $('quick'); q.innerHTML = ''; QUICK.forEach(function (x) { q.appendChild(tile(x[0], x[1])); }); renderMarks(); }
+  function renderStart() {
+    var h = $('hero'); h.innerHTML = ''; h.appendChild(tile(BLOG.n, BLOG.u, BLOG.i, BLOG.c, true));
+    var q = $('quick'); q.innerHTML = ''; QUICK.forEach(function (x) { q.appendChild(tile(x.n, x.u, x.i, x.c)); });
+    renderMarks();
+  }
   function renderMarks() {
     var m = $('marks'); m.innerHTML = '';
-    if (!me || !me.marks.length) { var p = el('p', 'muted', 'পছন্দের পেজে ☆ চাপলে এখানে জমা হবে।'); p.style.gridColumn = '1/-1'; m.appendChild(p); return; }
+    if (!me || !me.marks.length) { var p = el('p', 'muted', '\u09aa\u099b\u09a8\u09cd\u09a6\u09c7\u09b0 \u09aa\u09c7\u099c\u09c7 \u2606 \u099a\u09be\u09aa\u09b2\u09c7 \u098f\u0996\u09be\u09a8\u09c7 \u099c\u09ae\u09be \u09b9\u09ac\u09c7\u0964'); p.style.gridColumn = '1/-1'; m.appendChild(p); return; }
     me.marks.forEach(function (x) { m.appendChild(tile(x[0], x[1])); });
   }
 
-  /* ---------- ৩ডি ট্যাব ভিউ ---------- */
+  /* ---------- \u09e9\u09a1\u09bf \u099f\u09cd\u09af\u09be\u09ac \u09ad\u09bf\u0989 ---------- */
   var sel = 0;
   function ring() {
     var r = $('ring'); r.innerHTML = '';
@@ -353,10 +391,10 @@
     tabs.forEach(function (t, i) {
       var c = el('div', 'c3' + (i === active ? ' cur' : '')); c.tabIndex = 0;
       c.style.transform = 'rotateY(' + (i * stepA) + 'deg) translateZ(' + R + 'px)';
-      var x = el('button', 'x', '✕'); x.title = 'ট্যাব বন্ধ';
+      var x = el('button', 'x', '\u2715'); x.title = '\u099f\u09cd\u09af\u09be\u09ac \u09ac\u09a8\u09cd\u09a7';
       x.onclick = function (e) { e.stopPropagation(); closeTab(i); sel = Math.min(sel, tabs.length - 1); ring(); };
-      c.appendChild(x); c.appendChild(el('div', 'pv', t.u ? host(t.u).charAt(0).toUpperCase() : '⌂'));
-      c.appendChild(el('b', '', t.u ? host(t.u) : 'নতুন ট্যাব')); c.appendChild(el('small', '', t.u || 'শুরুর পেজ'));
+      c.appendChild(x); c.appendChild(el('div', 'pv', t.u ? host(t.u).charAt(0).toUpperCase() : '\u2302'));
+      c.appendChild(el('b', '', t.u ? host(t.u) : '\u09a8\u09a4\u09c1\u09a8 \u099f\u09cd\u09af\u09be\u09ac')); c.appendChild(el('small', '', t.u || '\u09b6\u09c1\u09b0\u09c1\u09b0 \u09aa\u09c7\u099c'));
       c.onclick = function () { if (i === sel) { setActive(i); $('t3d').hidden = true; } else { sel = i; spin(); } };
       r.appendChild(c);
     });
@@ -372,7 +410,7 @@
   $('tNew').onclick = function () { newTab(''); sel = active; ring(); };
   $('tClose').onclick = function () { $('t3d').hidden = true; };
 
-  /* ---------- সাইড প্যানেল ---------- */
+  /* ---------- \u09b8\u09be\u0987\u09a1 \u09aa\u09cd\u09af\u09be\u09a8\u09c7\u09b2 ---------- */
   var view = 'ai';
   function openDrawer(v) { view = v; $('drawer').classList.add('open'); renderDrawer(); }
   function closeDrawer() { $('drawer').classList.remove('open'); }
@@ -386,7 +424,7 @@
     Array.prototype.forEach.call($('seg').querySelectorAll('button[data-v]'), function (b) { b.classList.toggle('on', b.dataset.v === view); });
     var p = $('pane'); p.innerHTML = ''; $('askform').hidden = view !== 'ai';
     if (view === 'ai') {
-      if (!chat) { chat = el('div', 'chat'); say('ai', 'আমি আপনার সহকারী। যেকোনো বিষয়ে প্রশ্ন করুন, আমি উইকিপিডিয়া থেকে তথ্য খুঁজে দেব (আমি ছোট সহকারী, সব প্রশ্নের উত্তর জানি না)। হিসাব (যেমন 25*4+10) বা "এখন সময় কত" লিখলেও চলবে।'); }
+      if (!chat) { chat = el('div', 'chat'); say('ai', '\u0986\u09ae\u09bf \u0986\u09aa\u09a8\u09be\u09b0 \u09b8\u09b9\u0995\u09be\u09b0\u09c0\u0964 \u09af\u09c7\u0995\u09cb\u09a8\u09cb \u09ac\u09bf\u09b7\u09af\u09bc\u09c7 \u09aa\u09cd\u09b0\u09b6\u09cd\u09a8 \u0995\u09b0\u09c1\u09a8, \u0986\u09ae\u09bf \u0989\u0987\u0995\u09bf\u09aa\u09bf\u09a1\u09bf\u09af\u09bc\u09be \u09a5\u09c7\u0995\u09c7 \u09a4\u09a5\u09cd\u09af \u0996\u09c1\u0981\u099c\u09c7 \u09a6\u09c7\u09ac (\u0986\u09ae\u09bf \u099b\u09cb\u099f \u09b8\u09b9\u0995\u09be\u09b0\u09c0, \u09b8\u09ac \u09aa\u09cd\u09b0\u09b6\u09cd\u09a8\u09c7\u09b0 \u0989\u09a4\u09cd\u09a4\u09b0 \u099c\u09be\u09a8\u09bf \u09a8\u09be\u0964 \u09a8\u09be \u09aa\u09c7\u09b2\u09c7 \u0997\u09c1\u0997\u09b2\u09c7 \u0996\u09c1\u0981\u099c\u09c7 \u09a6\u09c7\u09ac)\u0964 \u09b9\u09bf\u09b8\u09be\u09ac (\u09af\u09c7\u09ae\u09a8 25*4+10) \u09ac\u09be "\u098f\u0996\u09a8 \u09b8\u09ae\u09af\u09bc \u0995\u09a4" \u09b2\u09bf\u0996\u09b2\u09c7\u0993 \u099a\u09b2\u09ac\u09c7\u0964'); }
       p.appendChild(chat); p.scrollTop = p.scrollHeight;
     } else if (view === 'tools') tools(p);
     else if (view === 'store') store(p);
@@ -400,11 +438,11 @@
     if (!/^[\d\s+\-*/().%]+$/.test(s) || !/\d/.test(s)) return null;
     try { var r = Function('"use strict";return (' + s + ')')(); return typeof r === 'number' && isFinite(r) ? r : null; } catch (e) { return null; }
   }
-  var STOP = ['কি','কী','কে','কাকে','কার','কোথায়','কখন','কেন','কিভাবে','কীভাবে','কত','হয়','হলো','হল','হচ্ছে','আছে','বলে','কাকে বলে','সম্পর্কে','বিষয়ে','বলো','বলুন','বল','আমাকে','আমায়','দাও','দিন','জানাও','জানান','সম্পর্কে বলো','এর','একটি','কোন','কোনটি',
+  var STOP = ['\u0995\u09bf','\u0995\u09c0','\u0995\u09c7','\u0995\u09be\u0995\u09c7','\u0995\u09be\u09b0','\u0995\u09cb\u09a5\u09be\u09af\u09bc','\u0995\u0996\u09a8','\u0995\u09c7\u09a8','\u0995\u09bf\u09ad\u09be\u09ac\u09c7','\u0995\u09c0\u09ad\u09be\u09ac\u09c7','\u0995\u09a4','\u09b9\u09af\u09bc','\u09b9\u09b2\u09cb','\u09b9\u09b2','\u09b9\u099a\u09cd\u099b\u09c7','\u0986\u099b\u09c7','\u09ac\u09b2\u09c7','\u0995\u09be\u0995\u09c7 \u09ac\u09b2\u09c7','\u09b8\u09ae\u09cd\u09aa\u09b0\u09cd\u0995\u09c7','\u09ac\u09bf\u09b7\u09af\u09bc\u09c7','\u09ac\u09b2\u09cb','\u09ac\u09b2\u09c1\u09a8','\u09ac\u09b2','\u0986\u09ae\u09be\u0995\u09c7','\u0986\u09ae\u09be\u09af\u09bc','\u09a6\u09be\u0993','\u09a6\u09bf\u09a8','\u099c\u09be\u09a8\u09be\u0993','\u099c\u09be\u09a8\u09be\u09a8','\u09b8\u09ae\u09cd\u09aa\u09b0\u09cd\u0995\u09c7 \u09ac\u09b2\u09cb','\u098f\u09b0','\u098f\u0995\u099f\u09bf','\u0995\u09cb\u09a8','\u0995\u09cb\u09a8\u099f\u09bf',
     'what','who','whom','whose','is','are','was','were','the','a','an','of','tell','me','about','how','why','where','when','which','does','do','define','explain'];
   function clean(q) {
-    var w = q.replace(/[?？!।,.;:"'()]/g, ' ').split(/\s+/).filter(function (x) { return x && STOP.indexOf(x.toLowerCase()) < 0; });
-    var r = w.join(' ').trim(); return r || q.replace(/[?？!।]/g, '').trim();
+    var w = q.replace(/[?\uff1f!\u0964,.;:"'()]/g, ' ').split(/\s+/).filter(function (x) { return x && STOP.indexOf(x.toLowerCase()) < 0; });
+    var r = w.join(' ').trim(); return r || q.replace(/[?\uff1f!\u0964]/g, '').trim();
   }
   function norm(x) { return (x || '').toLowerCase().replace(/\s+/g, ' ').trim(); }
   function getSummary(lang, q) {
@@ -440,61 +478,61 @@
     e.preventDefault(); var q = $('q').value.trim(); if (!q) return; $('q').value = ''; say('me', q);
     var m = safeMath(q);
     if (m !== null) { say('ai', q + ' = ' + m); return; }
-    if (/সময়|তারিখ|\btime\b|\bdate\b/i.test(q)) {
+    if (/\u09b8\u09ae\u09af\u09bc|\u09a4\u09be\u09b0\u09bf\u0996|\btime\b|\bdate\b/i.test(q)) {
       say('ai', new Date().toLocaleString('bn-BD', { dateStyle: 'full', timeStyle: 'short' })); return;
     }
-    var wait = say('ai', 'খুঁজছি...');
+    var wait = say('ai', '\u0996\u09c1\u0981\u099c\u099b\u09bf...');
     lookup(q).then(function (r) {
-      if (!r) { wait.textContent = 'এই প্রশ্নের উত্তর পাইনি। অন্যভাবে লিখে দেখুন।'; return; }
+      if (!r) { wait.textContent = '\u0989\u0987\u0995\u09bf\u09aa\u09bf\u09a1\u09bf\u09af\u09bc\u09be\u09af\u09bc \u098f\u0987 \u09aa\u09cd\u09b0\u09b6\u09cd\u09a8\u09c7\u09b0 \u0989\u09a4\u09cd\u09a4\u09b0 \u09aa\u09be\u0987\u09a8\u09bf\u0964\n\n'; var g = el('button', 'lnk', '\u0997\u09c1\u0997\u09b2\u09c7 \u0996\u09c1\u0981\u099c\u09c1\u09a8'); g.onclick = function () { go(q); }; wait.appendChild(g); return; }
       wait.textContent = r.title + '\n\n' + r.text + '\n\n';
-      var b = el('button', 'lnk', 'পুরো পেজ খুলুন');
+      var b = el('button', 'lnk', '\u09aa\u09c1\u09b0\u09cb \u09aa\u09c7\u099c \u0996\u09c1\u09b2\u09c1\u09a8');
       b.onclick = function () { go(r.url); closeDrawer(); };
       wait.appendChild(b);
-    }).catch(function () { wait.textContent = 'ইন্টারনেট সংযোগ নেই বা সার্ভার সাড়া দিচ্ছে না।'; });
+    }).catch(function () { wait.textContent = '\u0987\u09a8\u09cd\u099f\u09be\u09b0\u09a8\u09c7\u099f \u09b8\u0982\u09af\u09cb\u0997 \u09a8\u09c7\u0987 \u09ac\u09be \u09b8\u09be\u09b0\u09cd\u09ad\u09be\u09b0 \u09b8\u09be\u09a1\u09bc\u09be \u09a6\u09bf\u099a\u09cd\u099b\u09c7 \u09a8\u09be\u0964'; });
   });
 
-  /* ---------- টুলস (ইনস্টল করা এক্সটেনশন) ---------- */
+  /* ---------- \u099f\u09c1\u09b2\u09b8 (\u0987\u09a8\u09b8\u09cd\u099f\u09b2 \u0995\u09b0\u09be \u098f\u0995\u09cd\u09b8\u099f\u09c7\u09a8\u09b6\u09a8) ---------- */
   var timer = { t: 0, run: null, start: 0 };
   function fmt(ms) { var s = Math.floor(ms / 1000), c = Math.floor((ms % 1000) / 10); return ('0' + Math.floor(s / 60)).slice(-2) + ':' + ('0' + (s % 60)).slice(-2) + '.' + ('0' + c).slice(-2); }
   var BUILD = {
     notes: function (box) {
-      var ta = el('textarea'); ta.value = me.notes || ''; ta.placeholder = 'এখানে লিখুন...';
+      var ta = el('textarea'); ta.value = me.notes || ''; ta.placeholder = '\u098f\u0996\u09be\u09a8\u09c7 \u09b2\u09bf\u0996\u09c1\u09a8...';
       ta.oninput = function () { me.notes = ta.value; persist(); }; box.appendChild(ta);
     },
     calc: function (box) {
-      var g = el('div', 'calc'), d = el('input'); d.placeholder = '0'; d.inputMode = 'none'; d.setAttribute('aria-label', 'হিসাব'); g.appendChild(d);
-      ['7', '8', '9', '/', '4', '5', '6', '*', '1', '2', '3', '-', '0', '.', '=', '+', 'C', '(', ')', '⌫'].forEach(function (k) {
+      var g = el('div', 'calc'), d = el('input'); d.placeholder = '0'; d.inputMode = 'none'; d.setAttribute('aria-label', '\u09b9\u09bf\u09b8\u09be\u09ac'); g.appendChild(d);
+      ['7', '8', '9', '/', '4', '5', '6', '*', '1', '2', '3', '-', '0', '.', '=', '+', 'C', '(', ')', '\u232b'].forEach(function (k) {
         var b = el('button', /[\/*\-+]/.test(k) ? 'op' : '', k);
         b.onclick = function () {
-          if (k === 'C') d.value = ''; else if (k === '⌫') d.value = d.value.slice(0, -1);
-          else if (k === '=') { var r = safeMath(d.value); d.value = r === null ? 'ভুল' : String(r); } else { if (d.value === 'ভুল') d.value = ''; d.value += k; }
+          if (k === 'C') d.value = ''; else if (k === '\u232b') d.value = d.value.slice(0, -1);
+          else if (k === '=') { var r = safeMath(d.value); d.value = r === null ? '\u09ad\u09c1\u09b2' : String(r); } else { if (d.value === '\u09ad\u09c1\u09b2') d.value = ''; d.value += k; }
         }; g.appendChild(b);
       }); box.appendChild(g);
     },
     timer: function (box) {
-      var big = el('div', 'big', fmt(timer.t)), row = el('div', 'row'), go1 = el('button', 'btn', timer.run ? 'থামান' : 'শুরু'), rs = el('button', 'btn ghost', 'রিসেট');
+      var big = el('div', 'big', fmt(timer.t)), row = el('div', 'row'), go1 = el('button', 'btn', timer.run ? '\u09a5\u09be\u09ae\u09be\u09a8' : '\u09b6\u09c1\u09b0\u09c1'), rs = el('button', 'btn ghost', '\u09b0\u09bf\u09b8\u09c7\u099f');
       function tick() { timer.t = Date.now() - timer.start; big.textContent = fmt(timer.t); }
       if (timer.run) { clearInterval(timer.run); timer.run = setInterval(tick, 50); }
       go1.onclick = function () {
-        if (timer.run) { clearInterval(timer.run); timer.run = null; go1.textContent = 'শুরু'; }
-        else { timer.start = Date.now() - timer.t; timer.run = setInterval(tick, 50); go1.textContent = 'থামান'; }
+        if (timer.run) { clearInterval(timer.run); timer.run = null; go1.textContent = '\u09b6\u09c1\u09b0\u09c1'; }
+        else { timer.start = Date.now() - timer.t; timer.run = setInterval(tick, 50); go1.textContent = '\u09a5\u09be\u09ae\u09be\u09a8'; }
       };
-      rs.onclick = function () { clearInterval(timer.run); timer.run = null; timer.t = 0; big.textContent = fmt(0); go1.textContent = 'শুরু'; };
+      rs.onclick = function () { clearInterval(timer.run); timer.run = null; timer.t = 0; big.textContent = fmt(0); go1.textContent = '\u09b6\u09c1\u09b0\u09c1'; };
       row.appendChild(go1); row.appendChild(rs); box.appendChild(big); box.appendChild(row);
     },
-    neon: function (box) { box.appendChild(el('p', 'muted', 'নিয়ন থিম চালু আছে। বন্ধ করতে স্টোর থেকে রিমুভ করুন।')); }
+    neon: function (box) { box.appendChild(el('p', 'muted', '\u09a8\u09bf\u09af\u09bc\u09a8 \u09a5\u09bf\u09ae \u099a\u09be\u09b2\u09c1 \u0986\u099b\u09c7\u0964 \u09ac\u09a8\u09cd\u09a7 \u0995\u09b0\u09a4\u09c7 \u09b8\u09cd\u099f\u09cb\u09b0 \u09a5\u09c7\u0995\u09c7 \u09b0\u09bf\u09ae\u09c1\u09ad \u0995\u09b0\u09c1\u09a8\u0964')); }
   };
   function tools(p) {
     var list = EXT.filter(function (x) { return me.ext.indexOf(x.id) >= 0; });
-    if (!list.length) { p.appendChild(el('p', 'muted', 'এখনো কোনো টুল ইনস্টল করা নেই। "স্টোর" ট্যাব থেকে ইনস্টল করুন।')); return; }
+    if (!list.length) { p.appendChild(el('p', 'muted', '\u098f\u0996\u09a8\u09cb \u0995\u09cb\u09a8\u09cb \u099f\u09c1\u09b2 \u0987\u09a8\u09b8\u09cd\u099f\u09b2 \u0995\u09b0\u09be \u09a8\u09c7\u0987\u0964 "\u09b8\u09cd\u099f\u09cb\u09b0" \u099f\u09cd\u09af\u09be\u09ac \u09a5\u09c7\u0995\u09c7 \u0987\u09a8\u09b8\u09cd\u099f\u09b2 \u0995\u09b0\u09c1\u09a8\u0964')); return; }
     list.forEach(function (x) { var c = el('div', 'panel'); c.appendChild(el('h3', '', x.icon + ' ' + x.name)); BUILD[x.id](c); p.appendChild(c); });
   }
   function store(p) {
-    p.appendChild(el('p', 'muted', 'এক্সটেনশন ইনস্টল করলে সেটা টুলস ট্যাবে চালু হবে।'));
+    p.appendChild(el('p', 'muted', '\u098f\u0995\u09cd\u09b8\u099f\u09c7\u09a8\u09b6\u09a8 \u0987\u09a8\u09b8\u09cd\u099f\u09b2 \u0995\u09b0\u09b2\u09c7 \u09b8\u09c7\u099f\u09be \u099f\u09c1\u09b2\u09b8 \u099f\u09cd\u09af\u09be\u09ac\u09c7 \u099a\u09be\u09b2\u09c1 \u09b9\u09ac\u09c7\u0964'));
     EXT.forEach(function (x) {
       var on = me.ext.indexOf(x.id) >= 0, c = el('div', 'panel row'), t = el('div');
       t.appendChild(el('h3', '', x.icon + ' ' + x.name)); t.appendChild(el('p', '', x.desc));
-      var b = el('button', on ? 'btn ghost' : 'btn', on ? 'রিমুভ' : 'ইনস্টল');
+      var b = el('button', on ? 'btn ghost' : 'btn', on ? '\u09b0\u09bf\u09ae\u09c1\u09ad' : '\u0987\u09a8\u09b8\u09cd\u099f\u09b2');
       b.onclick = function () {
         if (on) me.ext.splice(me.ext.indexOf(x.id), 1); else me.ext.push(x.id);
         persist(); document.body.classList.toggle('neon', me.ext.indexOf('neon') >= 0); renderDrawer();
@@ -504,11 +542,11 @@
   }
   function profile(p) {
     var c = el('div', 'panel'); c.appendChild(el('h3', '', me.name)); c.appendChild(el('p', 'muted', me.email));
-    c.appendChild(el('p', 'muted', 'বুকমার্ক: ' + me.marks.length + ' টি · ইনস্টল করা টুল: ' + me.ext.length + ' টি')); p.appendChild(c);
-    var b = el('button', 'btn', 'লগআউট'); b.onclick = logout; p.appendChild(b);
+    c.appendChild(el('p', 'muted', '\u09ac\u09c1\u0995\u09ae\u09be\u09b0\u09cd\u0995: ' + me.marks.length + ' \u099f\u09bf \u00b7 \u0987\u09a8\u09b8\u09cd\u099f\u09b2 \u0995\u09b0\u09be \u099f\u09c1\u09b2: ' + me.ext.length + ' \u099f\u09bf')); p.appendChild(c);
+    var b = el('button', 'btn', '\u09b2\u0997\u0986\u0989\u099f'); b.onclick = logout; p.appendChild(b);
   }
 
-  /* ---------- চালু ---------- */
+  /* ---------- \u099a\u09be\u09b2\u09c1 ---------- */
   try { if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js'); } catch (e) {}
   var s = lsGet('mb_session', '');
   setMode(Object.keys(users).length === 0);
