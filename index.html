@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ঘুড়ি ব্রাউজার</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b1118">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
   :root {
     --bg:#0b1118; --bar:#141c26; --card:#1a2430; --fg:#e8eef4; --muted:#8fa0b2;
@@ -37,6 +41,9 @@
   .cube .c{transform:rotateY(90deg) translateZ(45px)} .cube .d{transform:rotateY(-90deg) translateZ(45px)}
   .cube .e{transform:rotateX(90deg) translateZ(45px)} .cube .f{transform:rotateX(-90deg) translateZ(45px)}
   @keyframes spin{from{transform:rotateX(-22deg) rotateY(0)}to{transform:rotateX(-22deg) rotateY(360deg)}}
+  .kite{display:block;width:84px;height:auto;margin:6px auto 14px;transform-origin:50% 8%;animation:sway 5s ease-in-out infinite}
+  @keyframes sway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+  .acard .kite{width:64px;margin:0 auto 6px}
   h1{font-size:24px;margin:0 0 4px;text-align:center}
   .sub{color:var(--muted);text-align:center;margin:0 0 20px}
   h2{font-size:12px;letter-spacing:.07em;color:var(--muted);margin:22px 0 10px;font-weight:600}
@@ -108,14 +115,21 @@
   .acard:focus-within{transform:rotateX(0) rotateY(0)}
   .acard h1{text-align:left;margin:0}
   .err{color:#ff8a8a;font-size:13px;min-height:18px}
-  @media(prefers-reduced-motion:reduce){.cube{animation:none}*{transition:none!important}}
+  @media(prefers-reduced-motion:reduce){.cube,.kite{animation:none}*{transition:none!important}}
 </style>
 </head>
 <body>
 
 <div id="auth" hidden>
   <form class="acard" id="aform" autocomplete="on">
-    <div class="scene" style="margin:0 auto 6px;transform:scale(.6)"><div class="cube"><i class="a">ঘুড়ি</i><i class="b">ওয়েব</i><i class="c">এআই</i><i class="d">টুলস</i><i class="e">সার্চ</i><i class="f">নিজ</i></div></div>
+    <svg class="kite" viewBox="0 0 100 130" role="img" aria-label="ঘুড়ি">
+  <polygon points="50,6 84,48 50,48" fill="var(--accent2)"/>
+  <polygon points="50,6 16,48 50,48" fill="var(--accent)"/>
+  <polygon points="84,48 50,92 50,48" fill="var(--accent)" opacity=".75"/>
+  <polygon points="16,48 50,92 50,48" fill="var(--accent2)" opacity=".8"/>
+  <path d="M50 6 L84 48 L50 92 L16 48 Z M16 48 H84 M50 6 V92" fill="none" stroke="var(--bg)" stroke-width="2.2" stroke-linejoin="round"/>
+  <path d="M50 92 C42 100 58 106 50 114 C44 120 56 124 52 129" fill="none" stroke="var(--accent2)" stroke-width="2.4" stroke-linecap="round"/>
+</svg>
     <h1 id="atitle">সাইন আপ</h1>
     <p class="muted" id="asub" style="margin:0">অ্যাকাউন্ট খুলে ব্রাউজার চালু করুন।</p>
     <input id="aname" type="text" placeholder="আপনার নাম" autocomplete="name">
@@ -134,12 +148,20 @@
   <button class="ib" id="reload" title="রিফ্রেশ">↻</button>
   <form id="bar"><input id="url" type="text" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="ঠিকানা লিখুন বা সার্চ করুন" aria-label="ঠিকানা"></form>
   <button class="ib" id="star" title="বুকমার্ক">☆</button>
+  <button class="ib" id="topAi" title="এআই সহকারী" style="color:var(--accent)">✦</button>
 </div>
 
 <div id="stage">
   <div id="start">
     <div class="wrap">
-      <div class="scene"><div class="cube"><i class="a">ঘুড়ি</i><i class="b">ওয়েব</i><i class="c">এআই</i><i class="d">টুলস</i><i class="e">সার্চ</i><i class="f">নিজ</i></div></div>
+      <svg class="kite" viewBox="0 0 100 130" role="img" aria-label="ঘুড়ি">
+  <polygon points="50,6 84,48 50,48" fill="var(--accent2)"/>
+  <polygon points="50,6 16,48 50,48" fill="var(--accent)"/>
+  <polygon points="84,48 50,92 50,48" fill="var(--accent)" opacity=".75"/>
+  <polygon points="16,48 50,92 50,48" fill="var(--accent2)" opacity=".8"/>
+  <path d="M50 6 L84 48 L50 92 L16 48 Z M16 48 H84 M50 6 V92" fill="none" stroke="var(--bg)" stroke-width="2.2" stroke-linejoin="round"/>
+  <path d="M50 92 C42 100 58 106 50 114 C44 120 56 124 52 129" fill="none" stroke="var(--accent2)" stroke-width="2.4" stroke-linecap="round"/>
+</svg>
       <p class="sub" style="margin:0 0 4px;letter-spacing:.08em">ঘুড়ি ব্রাউজার</p><h1 id="hello">স্বাগতম</h1>
       <p class="sub">ঠিকানা লিখুন, অথবা নিচের এআই বাটনে প্রশ্ন করুন।</p>
       <h2>দ্রুত লিংক</h2><div class="tiles" id="quick"></div>
@@ -355,6 +377,7 @@
   function openDrawer(v) { view = v; $('drawer').classList.add('open'); renderDrawer(); }
   function closeDrawer() { $('drawer').classList.remove('open'); }
   $('dAi').onclick = function () { openDrawer('ai'); };
+  $('topAi').onclick = function () { openDrawer('ai'); };
   $('dTools').onclick = function () { openDrawer('tools'); };
   $('dclose').onclick = closeDrawer;
   Array.prototype.forEach.call($('seg').querySelectorAll('button[data-v]'), function (b) { b.onclick = function () { view = b.dataset.v; renderDrawer(); }; });
@@ -363,7 +386,7 @@
     Array.prototype.forEach.call($('seg').querySelectorAll('button[data-v]'), function (b) { b.classList.toggle('on', b.dataset.v === view); });
     var p = $('pane'); p.innerHTML = ''; $('askform').hidden = view !== 'ai';
     if (view === 'ai') {
-      if (!chat) { chat = el('div', 'chat'); say('ai', 'আমি আপনার সহকারী। যেকোনো বিষয়ে প্রশ্ন করুন, আমি উইকিপিডিয়া থেকে উত্তর খুঁজে দেব। হিসাব (যেমন 25*4+10) বা "এখন সময় কত" লিখলেও চলবে।'); }
+      if (!chat) { chat = el('div', 'chat'); say('ai', 'আমি আপনার সহকারী। যেকোনো বিষয়ে প্রশ্ন করুন, আমি উইকিপিডিয়া থেকে তথ্য খুঁজে দেব (আমি ছোট সহকারী, সব প্রশ্নের উত্তর জানি না)। হিসাব (যেমন 25*4+10) বা "এখন সময় কত" লিখলেও চলবে।'); }
       p.appendChild(chat); p.scrollTop = p.scrollHeight;
     } else if (view === 'tools') tools(p);
     else if (view === 'store') store(p);
@@ -377,14 +400,41 @@
     if (!/^[\d\s+\-*/().%]+$/.test(s) || !/\d/.test(s)) return null;
     try { var r = Function('"use strict";return (' + s + ')')(); return typeof r === 'number' && isFinite(r) ? r : null; } catch (e) { return null; }
   }
-  function wiki(lang, q) {
+  var STOP = ['কি','কী','কে','কাকে','কার','কোথায়','কখন','কেন','কিভাবে','কীভাবে','কত','হয়','হলো','হল','হচ্ছে','আছে','বলে','কাকে বলে','সম্পর্কে','বিষয়ে','বলো','বলুন','বল','আমাকে','আমায়','দাও','দিন','জানাও','জানান','সম্পর্কে বলো','এর','একটি','কোন','কোনটি',
+    'what','who','whom','whose','is','are','was','were','the','a','an','of','tell','me','about','how','why','where','when','which','does','do','define','explain'];
+  function clean(q) {
+    var w = q.replace(/[?？!।,.;:"'()]/g, ' ').split(/\s+/).filter(function (x) { return x && STOP.indexOf(x.toLowerCase()) < 0; });
+    var r = w.join(' ').trim(); return r || q.replace(/[?？!।]/g, '').trim();
+  }
+  function norm(x) { return (x || '').toLowerCase().replace(/\s+/g, ' ').trim(); }
+  function getSummary(lang, q) {
+    var u = 'https://' + lang + '.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(q.replace(/ /g, '_')) + '?redirect=true';
+    return fetch(u).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (!d || d.type !== 'standard' || !d.extract) return null;
+      return { title: d.title, text: d.extract, url: (d.content_urls && d.content_urls.desktop && d.content_urls.desktop.page) || ('https://' + lang + '.wikipedia.org/wiki/' + encodeURIComponent(d.title)) };
+    }).catch(function () { return null; });
+  }
+  function searchWiki(lang, q) {
     var u = 'https://' + lang + '.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=' + encodeURIComponent(q) +
-      '&gsrlimit=1&prop=extracts&exintro=1&explaintext=1&exsentences=4&format=json&origin=*';
+      '&gsrlimit=6&prop=extracts&exintro=1&explaintext=1&exsentences=4&format=json&origin=*';
     return fetch(u).then(function (r) { return r.json(); }).then(function (d) {
       var pages = d && d.query && d.query.pages; if (!pages) return null;
-      var k = Object.keys(pages)[0], pg = pages[k]; if (!pg || !pg.extract) return null;
-      return { lang: lang, id: pg.pageid, title: pg.title, text: pg.extract };
-    });
+      var nq = norm(q), best = null, bs = -1e9;
+      Object.keys(pages).forEach(function (k) {
+        var pg = pages[k]; if (!pg.extract) return; var t = norm(pg.title), sc = -(pg.index || 9);
+        if (t === nq) sc += 100; else if (t.indexOf(nq) >= 0) sc += 40; else if (nq.indexOf(t) >= 0) sc += 30;
+        if (sc > bs) { bs = sc; best = pg; }
+      });
+      return best ? { title: best.title, text: best.extract, url: 'https://' + lang + '.wikipedia.org/?curid=' + best.pageid } : null;
+    }).catch(function () { return null; });
+  }
+  function lookup(raw) {
+    var q = clean(raw), langs = /[\u0980-\u09FF]/.test(q) ? ['bn', 'en'] : ['en', 'bn'];
+    function tryLang(i) {
+      if (i >= langs.length) return Promise.resolve(null);
+      return getSummary(langs[i], q).then(function (r) { return r || searchWiki(langs[i], q); }).then(function (r) { return r || tryLang(i + 1); });
+    }
+    return tryLang(0);
   }
   $('askform').addEventListener('submit', function (e) {
     e.preventDefault(); var q = $('q').value.trim(); if (!q) return; $('q').value = ''; say('me', q);
@@ -394,11 +444,11 @@
       say('ai', new Date().toLocaleString('bn-BD', { dateStyle: 'full', timeStyle: 'short' })); return;
     }
     var wait = say('ai', 'খুঁজছি...');
-    wiki('bn', q).then(function (r) { return r || wiki('en', q); }).then(function (r) {
+    lookup(q).then(function (r) {
       if (!r) { wait.textContent = 'এই প্রশ্নের উত্তর পাইনি। অন্যভাবে লিখে দেখুন।'; return; }
       wait.textContent = r.title + '\n\n' + r.text + '\n\n';
       var b = el('button', 'lnk', 'পুরো পেজ খুলুন');
-      b.onclick = function () { go('https://' + r.lang + '.wikipedia.org/?curid=' + r.id); closeDrawer(); };
+      b.onclick = function () { go(r.url); closeDrawer(); };
       wait.appendChild(b);
     }).catch(function () { wait.textContent = 'ইন্টারনেট সংযোগ নেই বা সার্ভার সাড়া দিচ্ছে না।'; });
   });
@@ -459,6 +509,7 @@
   }
 
   /* ---------- চালু ---------- */
+  try { if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js'); } catch (e) {}
   var s = lsGet('mb_session', '');
   setMode(Object.keys(users).length === 0);
   if (s && users[s]) enter(users[s]); else $('auth').hidden = false;
