@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ঘুড়ি ব্রাউজার</title>
+<style>
+  :root {
+    --bg:#0b1118; --bar:#141c26; --card:#1a2430; --fg:#e8eef4; --muted:#8fa0b2;
+    --line:#26323f; --accent:#35b8b0; --accent2:#f0b429; --on-accent:#04201e; --field:#1f2a36;
+  }
+  [hidden]{display:none!important}
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{display:flex;flex-direction:column;background:var(--bg);color:var(--fg);
+    font-family:system-ui,"Noto Sans Bengali",sans-serif;overflow:hidden}
+  body.neon{--accent:#ff3ec9;--accent2:#7cf4ff;--on-accent:#1b0016;--bg:#0a0612;--bar:#150b24;--card:#1d1030;--field:#24143b;--line:#3a2160}
+  button{font:inherit;color:var(--fg);background:transparent;border:0;cursor:pointer}
+  button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  input,textarea{font:inherit;color:var(--fg);background:var(--field);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0}
+  .top{display:flex;gap:4px;align-items:center;padding:8px;background:var(--bar);border-bottom:1px solid var(--line);
+    padding-top:max(8px,env(safe-area-inset-top))}
+  .ib{min-width:38px;height:38px;border-radius:10px;font-size:18px}
+  .ib:hover:not(:disabled){background:var(--field)} .ib:disabled{opacity:.3}
+  #bar{flex:1;display:flex;min-width:0}
+  #url{flex:1;height:38px;border-radius:19px;padding:0 14px;font-size:14px}
+  #star.on{color:var(--accent2)}
+  #stage{position:relative;flex:1;min-height:0;perspective:1200px}
+  iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}
+  #start{position:absolute;inset:0;overflow-y:auto;padding:20px 16px 24px}
+  .wrap{max-width:680px;margin:0 auto}
+  .scene{perspective:700px;width:90px;height:90px;margin:18px auto 30px}
+  .cube{width:90px;height:90px;position:relative;transform-style:preserve-3d;animation:spin 16s linear infinite}
+  .cube i{position:absolute;inset:0;border:1.5px solid var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);
+    display:grid;place-items:center;font-style:normal;font-weight:700;font-size:15px;color:var(--accent)}
+  .cube .a{transform:translateZ(45px)} .cube .b{transform:rotateY(180deg) translateZ(45px)}
+  .cube .c{transform:rotateY(90deg) translateZ(45px)} .cube .d{transform:rotateY(-90deg) translateZ(45px)}
+  .cube .e{transform:rotateX(90deg) translateZ(45px)} .cube .f{transform:rotateX(-90deg) translateZ(45px)}
+  @keyframes spin{from{transform:rotateX(-22deg) rotateY(0)}to{transform:rotateX(-22deg) rotateY(360deg)}}
+  h1{font-size:24px;margin:0 0 4px;text-align:center}
+  .sub{color:var(--muted);text-align:center;margin:0 0 20px}
+  h2{font-size:12px;letter-spacing:.07em;color:var(--muted);margin:22px 0 10px;font-weight:600}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;perspective:800px}
+  .tile{display:flex;flex-direction:column;gap:3px;padding:14px;background:var(--card);border:1px solid var(--line);
+    border-radius:12px;text-align:left;min-width:0;transform-style:preserve-3d;transition:transform .15s,box-shadow .15s;
+    box-shadow:0 6px 14px rgba(0,0,0,.35)}
+  .tile b,.tile small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transform:translateZ(14px)}
+  .tile small{color:var(--muted)}
+  .dock{display:flex;justify-content:space-around;gap:2px;padding:6px 6px;background:var(--bar);border-top:1px solid var(--line);
+    padding-bottom:max(6px,env(safe-area-inset-bottom));perspective:600px}
+  .dk{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 2px;border-radius:10px;font-size:11px;color:var(--muted);
+    transition:transform .15s;position:relative}
+  .dk span{font-size:19px;color:var(--fg)}
+  .dk:hover,.dk:active{transform:translateZ(18px) rotateX(-12deg);background:var(--field)}
+  .badge{position:absolute;top:2px;right:calc(50% - 22px);background:var(--accent);color:var(--on-accent);border-radius:9px;
+    font-size:10px;font-weight:700;padding:0 5px;min-width:16px;text-align:center}
+  /* drawer */
+  #drawer{position:fixed;left:0;right:0;bottom:0;height:64dvh;background:var(--bar);border-top:1px solid var(--line);
+    border-radius:18px 18px 0 0;display:flex;flex-direction:column;z-index:20;transform-origin:bottom center;
+    transform:perspective(900px) rotateX(-14deg) translateY(105%);transition:transform .35s cubic-bezier(.2,.8,.2,1);
+    box-shadow:0 -10px 30px rgba(0,0,0,.5)}
+  #drawer.open{transform:perspective(900px) rotateX(0) translateY(0)}
+  @media(min-width:820px){
+    #drawer{left:auto;top:0;height:auto;width:400px;border-radius:18px 0 0 18px;transform-origin:right center;
+      transform:perspective(1100px) rotateY(18deg) translateX(105%)}
+    #drawer.open{transform:perspective(1100px) rotateY(0) translateX(0)}
+  }
+  .seg{display:flex;gap:4px;padding:10px 10px 6px;align-items:center}
+  .seg button{flex:1;padding:8px 4px;border-radius:9px;font-size:13px;color:var(--muted)}
+  .seg button.on{background:var(--field);color:var(--fg);box-shadow:inset 0 -2px 0 var(--accent)}
+  .pane{flex:1;min-height:0;overflow-y:auto;padding:8px 12px 16px}
+  .chat{display:flex;flex-direction:column;gap:8px}
+  .msg{padding:9px 12px;border-radius:12px;max-width:92%;line-height:1.5;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+  .msg.me{align-self:flex-end;background:var(--accent);color:var(--on-accent)}
+  .msg.ai{align-self:flex-start;background:var(--card);border:1px solid var(--line)}
+  .msg a,.msg button.lnk{color:var(--accent);background:none;text-decoration:underline;padding:0}
+  .ask{display:flex;gap:8px;padding:8px 12px calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
+  .ask input{flex:1}
+  .btn{background:var(--accent);color:var(--on-accent);border-radius:10px;padding:10px 14px;font-weight:600}
+  .btn.ghost{background:var(--field);color:var(--fg)}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}
+  .panel h3{margin:0 0 8px;font-size:14px}
+  .panel textarea{width:100%;min-height:110px;resize:vertical}
+  .calc{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .calc button{background:var(--field);border-radius:8px;padding:10px 0;font-size:16px}
+  .calc button.op{color:var(--accent2)}
+  .calc input{grid-column:1/-1;text-align:right;font-size:18px}
+  .row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+  .row p{margin:2px 0 0;color:var(--muted);font-size:13px}
+  .big{font-size:30px;font-variant-numeric:tabular-nums;text-align:center;margin:6px 0 10px}
+  .muted{color:var(--muted);font-size:13px;line-height:1.5}
+  /* 3D tabs */
+  #t3d{position:fixed;inset:0;z-index:30;background:rgba(5,8,12,.92);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
+  .st3{flex:1;position:relative;perspective:1100px;overflow:hidden}
+  .ring{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.2,.8,.2,1)}
+  .c3{position:absolute;width:180px;height:250px;left:-90px;top:-125px;background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:12px;display:flex;flex-direction:column;gap:6px;text-align:left;box-shadow:0 10px 28px rgba(0,0,0,.6);backface-visibility:hidden}
+  .c3.cur{border-color:var(--accent)}
+  .c3 b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .c3 small{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .c3 .pv{flex:1;border-radius:8px;background:linear-gradient(135deg,var(--field),var(--bg));display:grid;place-items:center;font-size:34px;color:var(--accent)}
+  .c3 .x{align-self:flex-end;font-size:16px;color:var(--muted);padding:2px 8px}
+  .t3bar{display:flex;gap:8px;justify-content:center;padding:12px 12px calc(14px + env(safe-area-inset-bottom))}
+  /* auth */
+  #auth{position:fixed;inset:0;z-index:50;background:radial-gradient(circle at 30% 20%,#13303a,#0b1118 60%);display:grid;place-items:center;padding:16px;perspective:900px;overflow-y:auto}
+  .acard{width:min(380px,100%);background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:10px;
+    transform:rotateX(6deg) rotateY(-8deg);box-shadow:0 30px 60px rgba(0,0,0,.6);transition:transform .3s}
+  .acard:focus-within{transform:rotateX(0) rotateY(0)}
+  .acard h1{text-align:left;margin:0}
+  .err{color:#ff8a8a;font-size:13px;min-height:18px}
+  @media(prefers-reduced-motion:reduce){.cube{animation:none}*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div id="auth" hidden>
+  <form class="acard" id="aform" autocomplete="on">
+    <div class="scene" style="margin:0 auto 6px;transform:scale(.6)"><div class="cube"><i class="a">ঘুড়ি</i><i class="b">ওয়েব</i><i class="c">এআই</i><i class="d">টুলস</i><i class="e">সার্চ</i><i class="f">নিজ</i></div></div>
+    <h1 id="atitle">সাইন আপ</h1>
+    <p class="muted" id="asub" style="margin:0">অ্যাকাউন্ট খুলে ব্রাউজার চালু করুন।</p>
+    <input id="aname" type="text" placeholder="আপনার নাম" autocomplete="name">
+    <input id="aemail" type="email" placeholder="ইমেইল" autocomplete="email" required>
+    <input id="apass" type="password" placeholder="পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)" autocomplete="current-password" required>
+    <div class="err" id="aerr"></div>
+    <button class="btn" id="abtn" type="submit">সাইন আপ করুন</button>
+    <button class="btn ghost" id="aswitch" type="button">আগে থেকেই অ্যাকাউন্ট আছে? লগইন</button>
+    <p class="muted" style="margin:0">এই অ্যাকাউন্ট শুধু এই ডিভাইসের ব্রাউজারে সেভ থাকে।</p>
+  </form>
+</div>
+
+<div class="top">
+  <button class="ib" id="back" title="পেছনে" disabled>←</button>
+  <button class="ib" id="fwd" title="সামনে" disabled>→</button>
+  <button class="ib" id="reload" title="রিফ্রেশ">↻</button>
+  <form id="bar"><input id="url" type="text" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="ঠিকানা লিখুন বা সার্চ করুন" aria-label="ঠিকানা"></form>
+  <button class="ib" id="star" title="বুকমার্ক">☆</button>
+</div>
+
+<div id="stage">
+  <div id="start">
+    <div class="wrap">
+      <div class="scene"><div class="cube"><i class="a">ঘুড়ি</i><i class="b">ওয়েব</i><i class="c">এআই</i><i class="d">টুলস</i><i class="e">সার্চ</i><i class="f">নিজ</i></div></div>
+      <p class="sub" style="margin:0 0 4px;letter-spacing:.08em">ঘুড়ি ব্রাউজার</p><h1 id="hello">স্বাগতম</h1>
+      <p class="sub">ঠিকানা লিখুন, অথবা নিচের এআই বাটনে প্রশ্ন করুন।</p>
+      <h2>দ্রুত লিংক</h2><div class="tiles" id="quick"></div>
+      <h2>বুকমার্ক</h2><div class="tiles" id="marks"></div>
+      <p class="muted" style="margin-top:22px">কিছু সাইট (Google, Facebook, YouTube) এই পেজের ভেতরে খুলতে দেয় না। ফাঁকা দেখালে "নতুন ট্যাবে খুলুন" চাপুন।</p>
+    </div>
+  </div>
+</div>
+
+<div class="dock">
+  <button class="dk" id="dHome"><span>⌂</span>হোম</button>
+  <button class="dk" id="dTabs"><span>▣</span>ট্যাব<i class="badge" id="tcount">1</i></button>
+  <button class="dk" id="dNew"><span>＋</span>নতুন</button>
+  <button class="dk" id="dExt"><span>↗</span>বাইরে</button>
+  <button class="dk" id="dAi"><span>✦</span>এআই</button>
+  <button class="dk" id="dTools"><span>⚙</span>টুলস</button>
+</div>
+
+<div id="drawer" aria-label="সাইড প্যানেল">
+  <div class="seg" id="seg">
+    <button data-v="ai">এআই</button><button data-v="tools">টুলস</button><button data-v="store">স্টোর</button><button data-v="me">প্রোফাইল</button>
+    <button id="dclose" title="বন্ধ" style="flex:0 0 36px">✕</button>
+  </div>
+  <div class="pane" id="pane"></div>
+  <form class="ask" id="askform" hidden><input id="q" type="text" placeholder="প্রশ্ন লিখুন..." autocomplete="off"><button class="btn" type="submit">খুঁজুন</button></form>
+</div>
+
+<div id="t3d" hidden>
+  <div class="st3"><div class="ring" id="ring"></div></div>
+  <div class="t3bar">
+    <button class="btn ghost" id="tPrev">◀</button>
+    <button class="btn" id="tNew">＋ নতুন ট্যাব</button>
+    <button class="btn ghost" id="tNext">▶</button>
+    <button class="btn ghost" id="tClose">বন্ধ</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function lsGet(k, d) { try { var v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+
+  var QUICK = [
+    ['উইকিপিডিয়া (বাংলা)', 'https://bn.wikipedia.org/'], ['Wikipedia', 'https://en.wikipedia.org/'],
+    ['প্রথম আলো', 'https://www.prothomalo.com/'], ['OpenStreetMap', 'https://www.openstreetmap.org/'],
+    ['Archive.org', 'https://archive.org/'], ['Hacker News', 'https://news.ycombinator.com/']
+  ];
+  var EXT = [
+    { id: 'notes', icon: '✎', name: 'নোটপ্যাড', desc: 'দরকারি কথা লিখে রাখুন, নিজে নিজে সেভ হয়।' },
+    { id: 'calc', icon: '＋', name: 'ক্যালকুলেটর', desc: 'হিসাব করার ছোট ক্যালকুলেটর।' },
+    { id: 'timer', icon: '⏱', name: 'স্টপওয়াচ', desc: 'সময় মাপার স্টপওয়াচ।' },
+    { id: 'neon', icon: '◐', name: 'নিয়ন থিম', desc: 'ব্রাউজারের রং নিয়ন গোলাপি-নীল করে দেয়।' }
+  ];
+
+  /* ---------- অ্যাকাউন্ট ---------- */
+  var users = lsGet('mb_users', {}), me = null, signup = true;
+  function persist() { if (me) { users[me.email] = me; lsSet('mb_users', users); } }
+  function sha(s) {
+    try {
+      if (window.crypto && crypto.subtle) {
+        return crypto.subtle.digest('SHA-256', new TextEncoder().encode('mb:' + s)).then(function (b) {
+          return Array.prototype.map.call(new Uint8Array(b), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+        });
+      }
+    } catch (e) {}
+    return Promise.resolve('b64:' + btoa(unescape(encodeURIComponent(s))));
+  }
+  function setMode(isSignup) {
+    signup = isSignup;
+    $('atitle').textContent = isSignup ? 'সাইন আপ' : 'লগইন';
+    $('asub').textContent = isSignup ? 'অ্যাকাউন্ট খুলে ব্রাউজার চালু করুন।' : 'আপনার ইমেইল ও পাসওয়ার্ড দিন।';
+    $('aname').hidden = !isSignup;
+    $('abtn').textContent = isSignup ? 'সাইন আপ করুন' : 'লগইন করুন';
+    $('aswitch').textContent = isSignup ? 'আগে থেকেই অ্যাকাউন্ট আছে? লগইন' : 'নতুন অ্যাকাউন্ট খুলুন';
+    $('aerr').textContent = '';
+  }
+  $('aswitch').onclick = function () { setMode(!signup); };
+  $('aform').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var email = $('aemail').value.trim().toLowerCase(), pass = $('apass').value, name = $('aname').value.trim();
+    var err = $('aerr'); err.textContent = '';
+    if (pass.length < 6) { err.textContent = 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।'; return; }
+    sha(pass).then(function (h) {
+      if (signup) {
+        if (!name) { err.textContent = 'নাম লিখুন।'; return; }
+        if (users[email]) { err.textContent = 'এই ইমেইল দিয়ে আগেই অ্যাকাউন্ট খোলা হয়েছে। লগইন করুন।'; return; }
+        users[email] = { email: email, name: name, hash: h, ext: [], marks: [], notes: '' };
+      } else {
+        if (!users[email] || users[email].hash !== h) { err.textContent = 'ইমেইল বা পাসওয়ার্ড মিলছে না।'; return; }
+      }
+      lsSet('mb_users', users); lsSet('mb_session', email); enter(users[email]);
+    });
+  });
+  function enter(u) {
+    me = u; $('auth').hidden = true; $('apass').value = '';
+    document.body.classList.toggle('neon', me.ext.indexOf('neon') >= 0);
+    $('hello').textContent = 'স্বাগতম, ' + me.name;
+    if (!tabs.length) newTab('');
+    renderStart(); setActive(active);
+  }
+  function logout() {
+    lsSet('mb_session', ''); me = null; document.body.classList.remove('neon');
+    closeDrawer(); $('auth').hidden = false; setMode(false);
+  }
+
+  /* ---------- ট্যাব ও নেভিগেশন ---------- */
+  var tabs = [], active = 0;
+  function host(u) { return (u || '').replace(/^https?:\/\/(www\.)?/, '').split('/')[0]; }
+  function normalize(q) {
+    q = q.trim(); if (!q) return '';
+    if (/^https?:\/\//i.test(q)) return q;
+    if (!/\s/.test(q) && /\.[a-z]{2,}(\/|$|:)/i.test(q)) return 'https://' + q;
+    return 'https://bn.wikipedia.org/w/index.php?search=' + encodeURIComponent(q);
+  }
+  function newTab(u) {
+    var f = document.createElement('iframe');
+    f.title = 'ওয়েব পেজ'; f.hidden = true; f.referrerPolicy = 'no-referrer';
+    f.setAttribute('sandbox', 'allow-scripts allow-forms allow-same-origin allow-popups allow-popups-to-escape-sandbox');
+    $('stage').appendChild(f);
+    tabs.push({ u: '', hist: [], pos: -1, frame: f });
+    active = tabs.length - 1; if (u) go(u); else setActive(active);
+  }
+  function setActive(i) {
+    active = Math.max(0, Math.min(i, tabs.length - 1));
+    tabs.forEach(function (t, j) { t.frame.hidden = !(j === active && t.u); });
+    var t = tabs[active];
+    $('start').hidden = !!t.u;
+    $('url').value = t.u;
+    $('back').disabled = t.pos < 0; $('fwd').disabled = t.pos >= t.hist.length - 1;
+    $('tcount').textContent = tabs.length;
+    $('dExt').disabled = !t.u;
+    var on = me && t.u && me.marks.some(function (m) { return m[1] === t.u; });
+    $('star').textContent = on ? '★' : '☆'; $('star').classList.toggle('on', !!on);
+    if (!t.u && me) renderMarks();
+  }
+  function go(q) {
+    var u = normalize(q); if (!u) return; var t = tabs[active];
+    t.hist = t.hist.slice(0, t.pos + 1); t.hist.push(u); t.pos = t.hist.length - 1; t.u = u; t.frame.src = u; setActive(active);
+  }
+  function step(d) {
+    var t = tabs[active]; t.pos += d; t.u = t.pos >= 0 ? t.hist[t.pos] : '';
+    if (t.u) t.frame.src = t.u; setActive(active);
+  }
+  function closeTab(i) {
+    tabs[i].frame.remove(); tabs.splice(i, 1);
+    if (!tabs.length) { newTab(''); return; }
+    setActive(i >= tabs.length ? tabs.length - 1 : (active > i ? active - 1 : active));
+  }
+  $('bar').addEventListener('submit', function (e) { e.preventDefault(); go($('url').value); $('url').blur(); });
+  $('url').addEventListener('focus', function () { $('url').select(); });
+  $('back').onclick = function () { step(-1); };
+  $('fwd').onclick = function () { step(1); };
+  $('reload').onclick = function () { var t = tabs[active]; if (t.u) { t.frame.src = 'about:blank'; setTimeout(function () { t.frame.src = t.u; }, 30); } };
+  $('dHome').onclick = function () { var t = tabs[active]; t.pos = -1; t.u = ''; setActive(active); };
+  $('dNew').onclick = function () { newTab(''); };
+  $('dExt').onclick = function () { var t = tabs[active]; if (t.u) window.open(t.u, '_blank', 'noopener'); };
+  $('star').onclick = function () {
+    var t = tabs[active]; if (!t.u || !me) return; var idx = -1;
+    me.marks.forEach(function (m, n) { if (m[1] === t.u) idx = n; });
+    if (idx >= 0) me.marks.splice(idx, 1); else me.marks.push([host(t.u), t.u]);
+    persist(); setActive(active);
+  };
+
+  /* ---------- শুরুর পেজ ---------- */
+  function tile(name, u) {
+    var b = el('button', 'tile'); b.appendChild(el('b', '', name)); b.appendChild(el('small', '', host(u)));
+    b.onclick = function () { go(u); };
+    b.addEventListener('pointermove', function (e) {
+      var r = b.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+      b.style.transform = 'rotateY(' + (x * 22) + 'deg) rotateX(' + (-y * 22) + 'deg) translateZ(8px)';
+    });
+    b.addEventListener('pointerleave', function () { b.style.transform = ''; });
+    return b;
+  }
+  function renderStart() { var q = $('quick'); q.innerHTML = ''; QUICK.forEach(function (x) { q.appendChild(tile(x[0], x[1])); }); renderMarks(); }
+  function renderMarks() {
+    var m = $('marks'); m.innerHTML = '';
+    if (!me || !me.marks.length) { var p = el('p', 'muted', 'পছন্দের পেজে ☆ চাপলে এখানে জমা হবে।'); p.style.gridColumn = '1/-1'; m.appendChild(p); return; }
+    me.marks.forEach(function (x) { m.appendChild(tile(x[0], x[1])); });
+  }
+
+  /* ---------- ৩ডি ট্যাব ভিউ ---------- */
+  var sel = 0;
+  function ring() {
+    var r = $('ring'); r.innerHTML = '';
+    var n = tabs.length, stepA = 360 / Math.max(n, 3), R = Math.max(210, 100 / Math.tan(Math.PI / Math.max(n, 3)) + 40);
+    tabs.forEach(function (t, i) {
+      var c = el('div', 'c3' + (i === active ? ' cur' : '')); c.tabIndex = 0;
+      c.style.transform = 'rotateY(' + (i * stepA) + 'deg) translateZ(' + R + 'px)';
+      var x = el('button', 'x', '✕'); x.title = 'ট্যাব বন্ধ';
+      x.onclick = function (e) { e.stopPropagation(); closeTab(i); sel = Math.min(sel, tabs.length - 1); ring(); };
+      c.appendChild(x); c.appendChild(el('div', 'pv', t.u ? host(t.u).charAt(0).toUpperCase() : '⌂'));
+      c.appendChild(el('b', '', t.u ? host(t.u) : 'নতুন ট্যাব')); c.appendChild(el('small', '', t.u || 'শুরুর পেজ'));
+      c.onclick = function () { if (i === sel) { setActive(i); $('t3d').hidden = true; } else { sel = i; spin(); } };
+      r.appendChild(c);
+    });
+    spin();
+  }
+  function spin() {
+    var n = tabs.length, stepA = 360 / Math.max(n, 3), R = Math.max(210, 100 / Math.tan(Math.PI / Math.max(n, 3)) + 40);
+    $('ring').style.transform = 'translateZ(' + (-R) + 'px) rotateY(' + (-sel * stepA) + 'deg)';
+  }
+  $('dTabs').onclick = function () { sel = active; $('t3d').hidden = false; ring(); };
+  $('tPrev').onclick = function () { sel = (sel - 1 + tabs.length) % tabs.length; spin(); };
+  $('tNext').onclick = function () { sel = (sel + 1) % tabs.length; spin(); };
+  $('tNew').onclick = function () { newTab(''); sel = active; ring(); };
+  $('tClose').onclick = function () { $('t3d').hidden = true; };
+
+  /* ---------- সাইড প্যানেল ---------- */
+  var view = 'ai';
+  function openDrawer(v) { view = v; $('drawer').classList.add('open'); renderDrawer(); }
+  function closeDrawer() { $('drawer').classList.remove('open'); }
+  $('dAi').onclick = function () { openDrawer('ai'); };
+  $('dTools').onclick = function () { openDrawer('tools'); };
+  $('dclose').onclick = closeDrawer;
+  Array.prototype.forEach.call($('seg').querySelectorAll('button[data-v]'), function (b) { b.onclick = function () { view = b.dataset.v; renderDrawer(); }; });
+  var chat = null;
+  function renderDrawer() {
+    Array.prototype.forEach.call($('seg').querySelectorAll('button[data-v]'), function (b) { b.classList.toggle('on', b.dataset.v === view); });
+    var p = $('pane'); p.innerHTML = ''; $('askform').hidden = view !== 'ai';
+    if (view === 'ai') {
+      if (!chat) { chat = el('div', 'chat'); say('ai', 'আমি আপনার সহকারী। যেকোনো বিষয়ে প্রশ্ন করুন, আমি উইকিপিডিয়া থেকে উত্তর খুঁজে দেব। হিসাব (যেমন 25*4+10) বা "এখন সময় কত" লিখলেও চলবে।'); }
+      p.appendChild(chat); p.scrollTop = p.scrollHeight;
+    } else if (view === 'tools') tools(p);
+    else if (view === 'store') store(p);
+    else profile(p);
+  }
+  function say(who, text, extra) {
+    var m = el('div', 'msg ' + who, text); if (extra) m.appendChild(extra); chat.appendChild(m);
+    var p = $('pane'); p.scrollTop = p.scrollHeight; return m;
+  }
+  function safeMath(s) {
+    if (!/^[\d\s+\-*/().%]+$/.test(s) || !/\d/.test(s)) return null;
+    try { var r = Function('"use strict";return (' + s + ')')(); return typeof r === 'number' && isFinite(r) ? r : null; } catch (e) { return null; }
+  }
+  function wiki(lang, q) {
+    var u = 'https://' + lang + '.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=' + encodeURIComponent(q) +
+      '&gsrlimit=1&prop=extracts&exintro=1&explaintext=1&exsentences=4&format=json&origin=*';
+    return fetch(u).then(function (r) { return r.json(); }).then(function (d) {
+      var pages = d && d.query && d.query.pages; if (!pages) return null;
+      var k = Object.keys(pages)[0], pg = pages[k]; if (!pg || !pg.extract) return null;
+      return { lang: lang, id: pg.pageid, title: pg.title, text: pg.extract };
+    });
+  }
+  $('askform').addEventListener('submit', function (e) {
+    e.preventDefault(); var q = $('q').value.trim(); if (!q) return; $('q').value = ''; say('me', q);
+    var m = safeMath(q);
+    if (m !== null) { say('ai', q + ' = ' + m); return; }
+    if (/সময়|তারিখ|\btime\b|\bdate\b/i.test(q)) {
+      say('ai', new Date().toLocaleString('bn-BD', { dateStyle: 'full', timeStyle: 'short' })); return;
+    }
+    var wait = say('ai', 'খুঁজছি...');
+    wiki('bn', q).then(function (r) { return r || wiki('en', q); }).then(function (r) {
+      if (!r) { wait.textContent = 'এই প্রশ্নের উত্তর পাইনি। অন্যভাবে লিখে দেখুন।'; return; }
+      wait.textContent = r.title + '\n\n' + r.text + '\n\n';
+      var b = el('button', 'lnk', 'পুরো পেজ খুলুন');
+      b.onclick = function () { go('https://' + r.lang + '.wikipedia.org/?curid=' + r.id); closeDrawer(); };
+      wait.appendChild(b);
+    }).catch(function () { wait.textContent = 'ইন্টারনেট সংযোগ নেই বা সার্ভার সাড়া দিচ্ছে না।'; });
+  });
+
+  /* ---------- টুলস (ইনস্টল করা এক্সটেনশন) ---------- */
+  var timer = { t: 0, run: null, start: 0 };
+  function fmt(ms) { var s = Math.floor(ms / 1000), c = Math.floor((ms % 1000) / 10); return ('0' + Math.floor(s / 60)).slice(-2) + ':' + ('0' + (s % 60)).slice(-2) + '.' + ('0' + c).slice(-2); }
+  var BUILD = {
+    notes: function (box) {
+      var ta = el('textarea'); ta.value = me.notes || ''; ta.placeholder = 'এখানে লিখুন...';
+      ta.oninput = function () { me.notes = ta.value; persist(); }; box.appendChild(ta);
+    },
+    calc: function (box) {
+      var g = el('div', 'calc'), d = el('input'); d.placeholder = '0'; d.inputMode = 'none'; d.setAttribute('aria-label', 'হিসাব'); g.appendChild(d);
+      ['7', '8', '9', '/', '4', '5', '6', '*', '1', '2', '3', '-', '0', '.', '=', '+', 'C', '(', ')', '⌫'].forEach(function (k) {
+        var b = el('button', /[\/*\-+]/.test(k) ? 'op' : '', k);
+        b.onclick = function () {
+          if (k === 'C') d.value = ''; else if (k === '⌫') d.value = d.value.slice(0, -1);
+          else if (k === '=') { var r = safeMath(d.value); d.value = r === null ? 'ভুল' : String(r); } else { if (d.value === 'ভুল') d.value = ''; d.value += k; }
+        }; g.appendChild(b);
+      }); box.appendChild(g);
+    },
+    timer: function (box) {
+      var big = el('div', 'big', fmt(timer.t)), row = el('div', 'row'), go1 = el('button', 'btn', timer.run ? 'থামান' : 'শুরু'), rs = el('button', 'btn ghost', 'রিসেট');
+      function tick() { timer.t = Date.now() - timer.start; big.textContent = fmt(timer.t); }
+      if (timer.run) { clearInterval(timer.run); timer.run = setInterval(tick, 50); }
+      go1.onclick = function () {
+        if (timer.run) { clearInterval(timer.run); timer.run = null; go1.textContent = 'শুরু'; }
+        else { timer.start = Date.now() - timer.t; timer.run = setInterval(tick, 50); go1.textContent = 'থামান'; }
+      };
+      rs.onclick = function () { clearInterval(timer.run); timer.run = null; timer.t = 0; big.textContent = fmt(0); go1.textContent = 'শুরু'; };
+      row.appendChild(go1); row.appendChild(rs); box.appendChild(big); box.appendChild(row);
+    },
+    neon: function (box) { box.appendChild(el('p', 'muted', 'নিয়ন থিম চালু আছে। বন্ধ করতে স্টোর থেকে রিমুভ করুন।')); }
+  };
+  function tools(p) {
+    var list = EXT.filter(function (x) { return me.ext.indexOf(x.id) >= 0; });
+    if (!list.length) { p.appendChild(el('p', 'muted', 'এখনো কোনো টুল ইনস্টল করা নেই। "স্টোর" ট্যাব থেকে ইনস্টল করুন।')); return; }
+    list.forEach(function (x) { var c = el('div', 'panel'); c.appendChild(el('h3', '', x.icon + ' ' + x.name)); BUILD[x.id](c); p.appendChild(c); });
+  }
+  function store(p) {
+    p.appendChild(el('p', 'muted', 'এক্সটেনশন ইনস্টল করলে সেটা টুলস ট্যাবে চালু হবে।'));
+    EXT.forEach(function (x) {
+      var on = me.ext.indexOf(x.id) >= 0, c = el('div', 'panel row'), t = el('div');
+      t.appendChild(el('h3', '', x.icon + ' ' + x.name)); t.appendChild(el('p', '', x.desc));
+      var b = el('button', on ? 'btn ghost' : 'btn', on ? 'রিমুভ' : 'ইনস্টল');
+      b.onclick = function () {
+        if (on) me.ext.splice(me.ext.indexOf(x.id), 1); else me.ext.push(x.id);
+        persist(); document.body.classList.toggle('neon', me.ext.indexOf('neon') >= 0); renderDrawer();
+      };
+      c.appendChild(t); c.appendChild(b); p.appendChild(c);
+    });
+  }
+  function profile(p) {
+    var c = el('div', 'panel'); c.appendChild(el('h3', '', me.name)); c.appendChild(el('p', 'muted', me.email));
+    c.appendChild(el('p', 'muted', 'বুকমার্ক: ' + me.marks.length + ' টি · ইনস্টল করা টুল: ' + me.ext.length + ' টি')); p.appendChild(c);
+    var b = el('button', 'btn', 'লগআউট'); b.onclick = logout; p.appendChild(b);
+  }
+
+  /* ---------- চালু ---------- */
+  var s = lsGet('mb_session', '');
+  setMode(Object.keys(users).length === 0);
+  if (s && users[s]) enter(users[s]); else $('auth').hidden = false;
+})();
+</script>
+</body>
+</html>
